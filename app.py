@@ -16,8 +16,6 @@ warnings.filterwarnings('ignore', category=FutureWarning)
 
 import os
 
-app.scripts.config.serve_locally = True
-app.css.config.serve_locally = True
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
