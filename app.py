@@ -19,14 +19,38 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-path_original = os.path.join(BASE_DIR, "DM_AIAI_CustomerDB.csv")
-df_original = pd.read_csv(path_original)
+print(f"BASE_DIR: {BASE_DIR}")
+print(f"Files in BASE_DIR: {os.listdir(BASE_DIR)}")
 
-path_scaled = os.path.join(BASE_DIR, "df_customer_scaled.csv") 
-df_customer_scaled = pd.read_csv(path_scaled) # final dataframe with final solution labels
+try:
+    path_original = os.path.join(BASE_DIR, "DM_AIAI_CustomerDB.csv")
+    df_original = pd.read_csv(path_original)
+    print(f"✓ Loaded original: {len(df_original)} rows")
+except Exception as e:
+    print(f"✗ Error loading original: {e}")
 
-path_treated = os.path.join(BASE_DIR, "df_customer_treated.csv")
-df_customer_treated = pd.read_csv(path_treated) # pre-processed dataframe with no scaling or encoding
+try:
+    path_scaled = os.path.join(BASE_DIR, "df_customer_scaled.csv") 
+    df_customer_scaled = pd.read_csv(path_scaled)
+    print(f"✓ Loaded scaled: {len(df_customer_scaled)} rows")
+except Exception as e:
+    print(f"✗ Error loading scaled: {e}")
+
+try:
+    path_treated = os.path.join(BASE_DIR, "df_customer_treated.csv")
+    df_customer_treated = pd.read_csv(path_treated)
+    print(f"✓ Loaded treated: {len(df_customer_treated)} rows")
+except Exception as e:
+    print(f"✗ Error loading treated: {e}")
+
+#path_original = os.path.join(BASE_DIR, "DM_AIAI_CustomerDB.csv")
+#df_original = pd.read_csv(path_original)
+
+#path_scaled = os.path.join(BASE_DIR, "df_customer_scaled.csv") 
+#df_customer_scaled = pd.read_csv(path_scaled) # final dataframe with final solution labels
+
+#path_treated = os.path.join(BASE_DIR, "df_customer_treated.csv")
+#df_customer_treated = pd.read_csv(path_treated) # pre-processed dataframe with no scaling or encoding
 
 
 
