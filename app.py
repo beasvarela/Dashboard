@@ -1,52 +1,41 @@
+# 3D Cluster Visualization Dashboard .py script ----------------------------------------------------------
 
+# necessary imports
 import pandas as pd
 import numpy as np
-import umap
 import plotly.express as px
 from sklearn.decomposition import PCA
-
-
 import dash
 from dash import dcc, html, Input, Output, State
+import os
 
 np.random.seed(42)
 
 import warnings
 warnings.filterwarnings('ignore', category=FutureWarning)
 
-import os
+# to allow stakeholders to interact with the dashboard, we use the render.com platform to host it online
+# link for the dashboard: https://aiai-3d-cluster-visualization-dashboard.onrender.com/ (it takes some minutes to load)
 
-
+# creating a base directive with the files in the repository 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
 
 path_original = os.path.join(BASE_DIR, "DM_AIAI_CustomerDB.csv")
 df_original = pd.read_csv(path_original)
 
-
 path_scaled = os.path.join(BASE_DIR, "df_customer_scaled.csv") 
 df_customer_scaled = pd.read_csv(path_scaled)
-
 
 path_treated = os.path.join(BASE_DIR, "df_customer_treated.csv")
 df_customer_treated = pd.read_csv(path_treated)
 
 
-#path_original = os.path.join(BASE_DIR, "DM_AIAI_CustomerDB.csv")
-#df_original = pd.read_csv(path_original)
-
-#path_scaled = os.path.join(BASE_DIR, "df_customer_scaled.csv") 
-#df_customer_scaled = pd.read_csv(path_scaled) # final dataframe with final solution labels
-
-#path_treated = os.path.join(BASE_DIR, "df_customer_treated.csv")
-#df_customer_treated = pd.read_csv(path_treated) # pre-processed dataframe with no scaling or encoding
-
-
-
+# filtering out only the customers we chose not to remove
 df_customer_treated = df_customer_treated[df_customer_treated.index.isin(df_customer_scaled.index)]
+
 # creating a visualization dataframe by copying df_customer_scaled and adding previously dropped features
 df_vis = df_customer_scaled.copy()
-df_vis['Gender'] = df_customer_treated['Gender']
+df_vis['Gender'] = df_customer_treated['Gender'] 
 df_vis['Income_not_scaled'] = df_customer_treated['Income']
 df_vis['City'] = df_customer_treated['City']
 df_vis['Education'] = df_customer_treated['Education']
@@ -61,10 +50,8 @@ df_vis['Recency_not_scaled'] = df_customer_treated['Recency']
 df_vis['Province or State'] = df_original.loc[df_original.index.isin(df_vis.index), 'Province or State']
 
 
-
-# we apply PCA to the features that were used for the clustering solution
+# applying PCA to the features that were used for the clustering solution
 pca = PCA(n_components=3)
-
 
 pca_feats =['AdjustedCLV', 'AnnualizedCLV', 'RedemptionRatio',
  'LoyaltyStatus_Ordinal', 'AverageFlightsPerActiveMonth',
@@ -78,21 +65,22 @@ df_vis['x'] = pca_coords[:, 0]
 df_vis['y'] = pca_coords[:, 1]
 df_vis['z'] = pca_coords[:, 2]
 
-# getting umap coords from csv because it takes to long to render in render.com
+
+# getting umap coordinates from csv because it takes to long to render in render.com
 path_umap = os.path.join(BASE_DIR, "umap_coordinates.csv")
 umap_coords = pd.read_csv(path_umap)
 
-# getting umap coordinates
+# adding umap coordinates to the visualization dataframe
 df_vis['umap_x'] = umap_coords['umap_x']
 df_vis['umap_y'] = umap_coords['umap_y']
 df_vis['umap_z'] = umap_coords['umap_z']
 
 
-
+# creating the dash app for the dashboard
 app = dash.Dash(__name__)
 server = app.server   
 
-
+# styling the dashboard containers with html/css
 app.index_string = '''
 <!DOCTYPE html>
 <html>
@@ -162,13 +150,13 @@ app.index_string = '''
 '''
 
 
-
-
+# creating the dashboard layout 
 app.layout = html.Div([ 
 
 
     html.Div([html.H1("Cluster Visualization Dashboard")], className="header"),
 
+    # the lists in this dictionary will 'record' the selected options for each filter
     dcc.Store(id="filter-state",
     data={"gender": [],"marital": [], "education": [], "city": [], "state": [], "program": []}),
 
@@ -294,12 +282,11 @@ app.layout = html.Div([
             html.Div([dcc.Graph(id="cluster-pca", style={"height": "700px"})], className="graph-container"),
             html.Div([dcc.Graph(id="cluster-umap", style={"height": "700px"})], className="graph-container"),
 
-            html.Button("Download Dashboard HTML", id="download-html"),
-            dcc.Download(id="html-download")
 
             ], className="dashboard-container") #end of layout
 
-# helper function: when an option is selected the state of the filter lists changes
+# helper function: when an filter option is selected the state of the filter lists changes 
+# i.e. the option is added to the its respective list from the dictionary
 def toggle_value(lst, value):
     if value in lst:
         lst.remove(value)
@@ -307,23 +294,13 @@ def toggle_value(lst, value):
         lst.append(value)
     return lst
 
-@app.callback(
-    Output("html-download", "data"),
-    Input("download-html", "n_clicks"),
-    prevent_initial_call=False
-)
-def export_dashboard(n):
-    return dict(
-        content=app.index_string,
-        filename="dashboard.html"
-    )
 
 # whenever one of these inputs changes the update_plot function is called and the 3D plot is updated
 @app.callback(
     Output("filter-state", "data"),
 
     # input structure: button option id, click counter (when one of the existing options is clicked, the click counter
-    # increases by 1 and the input changes, triggering the callout)
+    # increases by 1 and the input changes, triggering the callback)
 
     # gender inputs
     [Input("male-option", "n_clicks"), Input("female-option", "n_clicks"), Input("all-gender-option", "n_clicks"),
@@ -331,7 +308,7 @@ def export_dashboard(n):
     Input("income-slider", "value"),
     # marital status input
     Input("single-option", "n_clicks"), Input("married-option", "n_clicks"), Input("divorced-option", "n_clicks"), Input("all-marital-option", "n_clicks"),
-    # education
+    # education inputs
     Input("high-school-or-below-option", "n_clicks"), Input("college-option", "n_clicks"), Input("bachelor-option", "n_clicks"), 
     Input("master-option", "n_clicks"),Input("doctor-option", "n_clicks"), Input("all-education-option", "n_clicks"), 
     # city inputs
@@ -357,17 +334,25 @@ def export_dashboard(n):
 
 def update_filter_state(*args): # arguments come from the callout inputs in order
 
+    """
+    This functions takes as arguments the inputs from the previous callback. It identifies which input was triggered
+    and updates its respective list from the callback state dictionary, which is the last argument. The toggle_value()
+    helper function allows for the list updates.
+    
+    """
+
+
     state = args[-1] # state is the last argument
     ctx = dash.callback_context
-    trigger = ctx.triggered_id
+    trigger = ctx.triggered_id # used to identify the input trigger
 
-    # -------------- gender options ----------------------
-    if trigger == "male-option":
-        state["gender"] = toggle_value(state["gender"], "male")
+    # -------------- gender options ----------------------------
+    if trigger == "male-option": # trigger is identified
+        state["gender"] = toggle_value(state["gender"], "male") # respected list is updated
     elif trigger == "female-option":
         state["gender"] = toggle_value(state["gender"], "female")
     elif trigger == "all-gender-option":
-        state["gender"] = []
+        state["gender"] = [] # when an 'all-...' option is selected the list is emptied
 
     # -------------- marital status options ----------------------
     elif trigger == "single-option":
@@ -550,12 +535,25 @@ def update_filter_state(*args): # arguments come from the callout inputs in orde
 
 def update_plot(state, income, flights, months, distance, recency):
 
+    """
+    This function generates a copy of df_vis and filters that dataset according to the inputs.
+    
+    :param state: dictionary whose keys are the features we want to filter and values are the lists used for filtering
+    :param income: tuple with minimum and maximum income range
+    :param flights: tuple with minimum and maximum total flights range
+    :param months: tuple with minimum and maximum active months range
+    :param distance: tuple with minimum and maximum total distance range
+    :param recency: tuple with minimum and maximum recency range
+    """
+
     df = df_vis.copy()
 
+    # if the gender list is not empty it filters only the gender categories included in the list
+    # else it does not filter and all genders are selected
     if state["gender"]:
         df = df[df["Gender"].isin(state["gender"])]
 
-
+    # same logic applies to rest of the function
     if state["marital"]:
         df = df[df["Marital Status"].isin(state["marital"])]
 
@@ -579,7 +577,7 @@ def update_plot(state, income, flights, months, distance, recency):
     if state["program"]:
         df = df[df["in_program"].isin(state["program"])]
 
-
+    # for the following features the dataframe is filtered allowing only the values in between the specified range
     df = df[df["Income_not_scaled"].between(*income)]
 
     df = df[df["TotalFlights_not_scaled"].between(*flights)]
@@ -590,13 +588,16 @@ def update_plot(state, income, flights, months, distance, recency):
 
     df = df[df["Recency_not_scaled"].between(*recency)]
 
+    # renaming columns with appropriate names for stakeholders
     df = df.rename(columns={'Income_not_scaled': 'Income', 'TotalFlights_not_scaled': 'Total Flights',
                             'ActiveMonths_not_scaled': 'Active Months', 'TotalDistanceKM_not_scaled':'Total Distance (Km)',
                              'Recency_not_scaled': 'Recency (days)' })
 
     df['merged_labels'] = df['merged_labels'].astype(str)
+
     df['Recency (days)'] = df['Recency (days)'].round(0)
 
+    # 3D plots
     fig_pca = px.scatter_3d(
         df,
         x="x", y="y", z="z",
@@ -625,9 +626,6 @@ def update_plot(state, income, flights, months, distance, recency):
 
 
     return fig_pca, fig_umap
-
-
-
 
 
 
