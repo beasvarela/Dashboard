@@ -277,8 +277,8 @@ app.layout = html.Div([
             )], className= "filters-section" ),
 
 
-            html.Div([dcc.Graph(id="cluster-pca",figure=fig_pca, style={"height": "700px"})], className="graph-container"),
-            html.Div([dcc.Graph(id="cluster-umap", figure=fig_umap, style={"height": "700px"})], className="graph-container"),
+            html.Div([dcc.Graph(id="cluster-pca", style={"height": "700px"})], className="graph-container"),
+            html.Div([dcc.Graph(id="cluster-umap", style={"height": "700px"})], className="graph-container"),
 
             html.Button("Download Dashboard HTML", id="download-html"),
             dcc.Download(id="html-download")
