@@ -79,7 +79,8 @@ df_vis['y'] = pca_coords[:, 1]
 df_vis['z'] = pca_coords[:, 2]
 
 # getting umap coords from csv because it takes to long to render in render.com
-umap_coords = pd.read_csv('umap_coordinates.csv')
+path_umap = os.path.join(BASE_DIR, "umap_coordinates.csv")
+umap_coords = pd.read_csv(path_umap)
 
 # getting umap coordinates
 df_vis['umap_x'] = umap_coords['umap_x']
