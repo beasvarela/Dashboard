@@ -19,29 +19,18 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-print(f"BASE_DIR: {BASE_DIR}")
-print(f"Files in BASE_DIR: {os.listdir(BASE_DIR)}")
 
-try:
-    path_original = os.path.join(BASE_DIR, "DM_AIAI_CustomerDB.csv")
-    df_original = pd.read_csv(path_original)
-    print(f"✓ Loaded original: {len(df_original)} rows")
-except Exception as e:
-    print(f"✗ Error loading original: {e}")
+path_original = os.path.join(BASE_DIR, "DM_AIAI_CustomerDB.csv")
+df_original = pd.read_csv(path_original)
 
-try:
-    path_scaled = os.path.join(BASE_DIR, "df_customer_scaled.csv") 
-    df_customer_scaled = pd.read_csv(path_scaled)
-    print(f"✓ Loaded scaled: {len(df_customer_scaled)} rows")
-except Exception as e:
-    print(f"✗ Error loading scaled: {e}")
 
-try:
-    path_treated = os.path.join(BASE_DIR, "df_customer_treated.csv")
-    df_customer_treated = pd.read_csv(path_treated)
-    print(f"✓ Loaded treated: {len(df_customer_treated)} rows")
-except Exception as e:
-    print(f"✗ Error loading treated: {e}")
+path_scaled = os.path.join(BASE_DIR, "df_customer_scaled.csv") 
+df_customer_scaled = pd.read_csv(path_scaled)
+
+
+path_treated = os.path.join(BASE_DIR, "df_customer_treated.csv")
+df_customer_treated = pd.read_csv(path_treated)
+
 
 #path_original = os.path.join(BASE_DIR, "DM_AIAI_CustomerDB.csv")
 #df_original = pd.read_csv(path_original)
@@ -320,7 +309,7 @@ def toggle_value(lst, value):
 @app.callback(
     Output("html-download", "data"),
     Input("download-html", "n_clicks"),
-    prevent_initial_call=True
+    prevent_initial_call=False
 )
 def export_dashboard(n):
     return dict(
