@@ -16,6 +16,9 @@ warnings.filterwarnings('ignore', category=FutureWarning)
 
 import os
 
+app.scripts.config.serve_locally = True
+app.css.config.serve_locally = True
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 path_original = os.path.join(BASE_DIR, "DM_AIAI_CustomerDB.csv")
@@ -617,5 +620,5 @@ def update_plot(state, income, flights, months, distance, recency):
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))  # use Render's PORT or default 10000
+    port = int(os.environ.get("PORT", 10000))  
     app.run_server(host="0.0.0.0", port=port)
