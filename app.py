@@ -78,14 +78,14 @@ df_vis['x'] = pca_coords[:, 0]
 df_vis['y'] = pca_coords[:, 1]
 df_vis['z'] = pca_coords[:, 2]
 
+# getting umap coords from csv because it takes to long to render in render.com
+umap_coords = pd.read_csv('umap_coordinates.csv')
 
 # getting umap coordinates
-umap_ax = umap.UMAP(n_components=3, random_state=42, n_neighbors=15,min_dist=0.1, metric='euclidean')
-umap_coords = umap_ax.fit_transform(df_customer_scaled[pca_feats])
-df_vis['umap_x'] = umap_coords[:, 0]
-df_vis['umap_y'] = umap_coords[:, 1]
-df_vis['umap_z'] = umap_coords[:, 2]
-df_vis['in_program'].unique()
+df_vis['umap_x'] = umap_coords['umap_x']
+df_vis['umap_y'] = umap_coords['umap_y']
+df_vis['umap_z'] = umap_coords['umap_z']
+
 
 
 app = dash.Dash(__name__)
@@ -366,7 +366,7 @@ def update_filter_state(*args): # arguments come from the callout inputs in orde
     elif trigger == "female-option":
         state["gender"] = toggle_value(state["gender"], "female")
     elif trigger == "all-gender-option":
-        state["geder"] = []
+        state["gender"] = []
 
     # -------------- marital status options ----------------------
     elif trigger == "single-option":
@@ -397,7 +397,7 @@ def update_filter_state(*args): # arguments come from the callout inputs in orde
     # -------------- program options ----------------------
     elif trigger == "enrolled-option":
         state["program"] = toggle_value(state["program"], True)
-    elif trigger == "not-enrolle-option":
+    elif trigger == "not-enrolled-option":
         state["program"] = toggle_value(state["program"], False)
     elif trigger == "all-enrollment-option":
         state["program"] = []
