@@ -14,13 +14,21 @@ np.random.seed(42)
 import warnings
 warnings.filterwarnings('ignore', category=FutureWarning)
 
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+path_original = os.path.join(BASE_DIR, "DM_AIAI_CustomerDB.csv")
+df_original = pd.read_csv(path_original)
+
+path_scaled = os.path.join(BASE_DIR, "df_customer_scaled.csv") 
+df_customer_scaled = pd.read_csv(path_scaled) # final dataframe with final solution labels
+
+path_treated = os.path.join(BASE_DIR, "df_customer_treated.csv")
+df_customer_treated = pd.read_csv(path_treated) # pre-processed dataframe with no scaling or encoding
 
 
 
-
-df_original = pd.read_csv('DM_AIAI_CustomerDB.csv')
-df_customer_scaled = pd.read_csv('df_customer_scaled.csv') # final dataframe with final solution labels
-df_customer_treated = pd.read_csv('df_customer_treated.csv') # pre-processed dataframe with no scaling or encoding
 df_customer_treated = df_customer_treated[df_customer_treated.index.isin(df_customer_scaled.index)]
 # creating a visualization dataframe by copying df_customer_scaled and adding previously dropped features
 df_vis = df_customer_scaled.copy()
@@ -606,7 +614,7 @@ def update_plot(state, income, flights, months, distance, recency):
 
 
 
-import os
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))  # use Render's PORT or default 10000
