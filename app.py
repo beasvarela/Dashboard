@@ -597,6 +597,13 @@ def update_plot(state, income, flights, months, distance, recency):
 
     df['Recency (days)'] = df['Recency (days)'].round(0)
 
+
+    # grouping customers by cluster and assigning them with their cluster's summary statistics
+    cluster_info = df.groupby('merged_labels').agg({'Income':'mean', 'Total Flights':'mean', 'Active Months': 'mean',
+                                                    'Total Distance (Km)': 'mean', 'Recency (days)': 'mean'}).reset_index()
+    
+    df = df.merge(cluster_info, on='merged_labels', suffixes=('','_cluster_mean'))
+
     # 3D plots
     fig_pca = px.scatter_3d(
         df,
@@ -608,9 +615,19 @@ def update_plot(state, income, flights, months, distance, recency):
         hover_data= ['Loyalty#', 'Income', 'City', 'Total Distance (Km)', 'Total Flights', 'Recency (days)']
     )
 
-    fig_pca.update_traces(marker=dict(size=3))
+    # showing cluster summary statistics
+    fig_pca.update_traces(
+    hovertemplate=
+        "<b>Cluster:</b> %{customdata[0]}<br>" +
+        "Average Income: %{customdata[1]:.2f}<br>" +
+        "Average Total Flights: %{customdata[2]:.2f}<br>"+
+        "Average Total Distance (Km): %{customdata[2]:.2f}<br>"
+        "Average Active Months: %{customdata[2]:.2f}<br>"
+        "Average Recency: %{customdata[2]:.2f}<extra></extra>",
+    customdata=df[['merged_labels','Income_cluster_mean','Total Flights_cluster_mean', 'Total Distance (Km)_cluster_mean',
+                    'Active Months_cluster_mean', 'Recency (days)_cluster_mean']], marker=dict(size=3))
 
-
+    # 3D plot
     fig_umap = px.scatter_3d(
         df,
         x="umap_x", 
@@ -622,7 +639,21 @@ def update_plot(state, income, flights, months, distance, recency):
         labels={"umap_x": "UMAP1", "umap_y": "UMAP2", "umap_z": "UMAP3", "merged_labels": "Cluster"},
         hover_data=['Loyalty#', 'Income', 'City', 'Total Distance (Km)', 'Total Flights', 'Recency (days)']
     )
-    fig_umap.update_traces(marker=dict(size=3))
+
+    # cluster summary statistics
+    fig_umap.update_traces(
+    hovertemplate=
+        "<b>Cluster:</b> %{customdata[0]}<br>" +
+        "Average Income: %{customdata[1]:.2f}<br>" +
+        "Average Total Flights: %{customdata[2]:.2f}<br>"+
+        "Average Total Distance (Km): %{customdata[2]:.2f}<br>"
+        "Average Active Months: %{customdata[2]:.2f}<br>"
+        "Average Recency: %{customdata[2]:.2f}<extra></extra>",
+    customdata=df[['merged_labels','Income_cluster_mean','Total Flights_cluster_mean', 'Total Distance (Km)_cluster_mean',
+                    'Active Months_cluster_mean', 'Recency (days)_cluster_mean']], marker=dict(size=3)
+)
+
+
 
 
     return fig_pca, fig_umap
