@@ -621,9 +621,9 @@ def update_plot(state, income, flights, months, distance, recency):
         "<b>Cluster:</b> %{customdata[0]}<br>" +
         "Average Income: %{customdata[1]:.2f}<br>" +
         "Average Total Flights: %{customdata[2]:.2f}<br>"+
-        "Average Total Distance (Km): %{customdata[2]:.2f}<br>"
-        "Average Active Months: %{customdata[2]:.2f}<br>"
-        "Average Recency: %{customdata[2]:.2f}<extra></extra>",
+        "Average Total Distance (Km): %{customdata[3]:.2f}<br>"
+        "Average Active Months: %{customdata[4]:.2f}<br>"
+        "Average Recency (days): %{customdata[5]:.2f}<extra></extra>",
     customdata=df[['merged_labels','Income_cluster_mean','Total Flights_cluster_mean', 'Total Distance (Km)_cluster_mean',
                     'Active Months_cluster_mean', 'Recency (days)_cluster_mean']], marker=dict(size=3))
 
@@ -646,9 +646,9 @@ def update_plot(state, income, flights, months, distance, recency):
         "<b>Cluster:</b> %{customdata[0]}<br>" +
         "Average Income: %{customdata[1]:.2f}<br>" +
         "Average Total Flights: %{customdata[2]:.2f}<br>"+
-        "Average Total Distance (Km): %{customdata[2]:.2f}<br>"
-        "Average Active Months: %{customdata[2]:.2f}<br>"
-        "Average Recency: %{customdata[2]:.2f}<extra></extra>",
+        "Average Total Distance (Km): %{customdata[3]:.2f}<br>"
+        "Average Active Months: %{customdata[4]:.2f}<br>"
+        "Average Recency (days): %{customdata[5]:.2f}<extra></extra>",
     customdata=df[['merged_labels','Income_cluster_mean','Total Flights_cluster_mean', 'Total Distance (Km)_cluster_mean',
                     'Active Months_cluster_mean', 'Recency (days)_cluster_mean']], marker=dict(size=3)
 )
